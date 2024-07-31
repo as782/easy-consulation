@@ -1,17 +1,23 @@
 <script setup lang="ts">
-import { Button } from 'vant'
+import { useUserStore } from './stores'
+
+const store = useUserStore()
 </script>
 
 <template>
-  <div>
-    app
-    <Button type="primary">dd</Button>
-    <a href="#">123</a>
-  </div>
+  <p>{{ store.user }}</p>
+  <button
+    @click="
+      store.setUser({
+        id: '1',
+        mobile: '1',
+        account: '1',
+        avatar: '1',
+        token: '1'
+      })
+    "
+  >
+    登录
+  </button>
+  <button @click="store.delUser()">退出</button>
 </template>
-
-<style scoped lang="scss">
-a {
-  color: var(--cp-primary);
-}
-</style>
