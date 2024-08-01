@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { getPatientList } from '@/services/user'
-import type { PatientList } from '@/types/user'
-import { onMounted, ref } from 'vue'
+import { addPatient, getPatientList } from '@/services/user'
+import type { PatientList, Patient } from '@/types/user'
+import { computed, onMounted, ref } from 'vue'
+import { nameRules, idCardRules } from '@/utils/rules'
+import { showConfirmDialog, showSuccessToast, type FormInstance } from 'vant'
 
 //  页面初始化加载数据
 const list = ref<PatientList>([])
@@ -12,6 +14,65 @@ const loadList = async () => {
 onMounted(() => {
   loadList()
 })
+
+const options = [
+  {
+    label: '男',
+    value: 0
+  },
+  {
+    label: '女',
+    value: 1
+  }
+]
+
+// 添加患者弹窗
+const show = ref(false)
+const showPopup = () => {
+  patient.value = { ...initPatient }
+  show.value = true
+}
+/** 初始化患者信息 */
+const initPatient: Patient = {
+  name: '',
+  idCard: '',
+  gender: 1,
+  defaultFlag: 0
+}
+/** 患者信息 */
+const patient = ref<Patient>({ ...initPatient })
+// 默认值需要转换
+const defaultFlag = computed({
+  get() {
+    return patient.value.defaultFlag === 1 ? true : false
+  },
+  set(value) {
+    patient.value.defaultFlag = value ? 1 : 0
+  }
+})
+
+/** 处理添加患者  */
+const form = ref<FormInstance>()
+const onSubmit = async () => {
+  try {
+    await form.value?.validate()
+    // 身份证倒数第二位，单数是男，双数是女
+    const gender = +patient.value.idCard.slice(-2, -1) % 2
+    if (gender !== patient.value.gender) {
+      await showConfirmDialog({
+        title: '温馨提示',
+        message: '填写的性别和身份证号中的不一致\n您确认提交吗？'
+      })
+    }
+    // 添加
+    await addPatient(patient.value)
+    show.value = false
+    loadList()
+    showSuccessToast('添加成功')
+  } catch (error) {
+    console.error(error)
+  }
+}
 </script>
 
 <template>
@@ -30,12 +91,50 @@ onMounted(() => {
         <div class="icon"><cp-icon name="user-edit" /></div>
         <div class="tag" v-if="item.defaultFlag === 1">默认</div>
       </div>
-      <div class="patient-add" v-if="list.length < 6">
+      <div class="patient-add" v-if="list.length < 6" @click="showPopup()">
         <cp-icon name="user-add" />
         <p>添加患者</p>
       </div>
 
       <div class="patient-tip">最多可添加 6 人</div>
+
+      <!-- 侧边栏 -->
+      <van-popup v-model:show="show" position="right">
+        <CpNavBar
+          title="添加患者"
+          right-text="保存"
+          @click-right="onSubmit"
+          :back="() => (show = false)"
+        ></CpNavBar>
+        <van-form autocomplete="off" ref="form">
+          <van-field
+            v-model="patient.name"
+            label="真实姓名"
+            placeholder="请输入真实姓名"
+            :rules="nameRules"
+          />
+          <van-field
+            v-model="patient.idCard"
+            label="身份证号"
+            placeholder="请输入身份证号"
+            :rules="idCardRules"
+          />
+          <van-field label="性别" class="pb4">
+            <!-- 单选按钮组件 -->
+            <template #input>
+              <cp-radio-btn
+                v-model="patient.gender"
+                :options="options"
+              ></cp-radio-btn>
+            </template>
+          </van-field>
+          <van-field label="默认就诊人">
+            <template #input>
+              <van-checkbox v-model="defaultFlag" :icon-size="18" round />
+            </template>
+          </van-field>
+        </van-form>
+      </van-popup>
     </div>
   </div>
 </template>
@@ -43,6 +142,16 @@ onMounted(() => {
 <style lang="scss" scoped>
 .patient-page {
   padding: 46px 0 80px;
+
+  :deep() {
+    .van-popup {
+      width: 100%;
+      height: 100%;
+      padding-top: 46px;
+      box-sizing: border-box;
+      transition: 0.4 ease;
+    }
+  }
 }
 
 .patient-list {
