@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { onUnmounted, ref } from 'vue'
 import { mobileRules, passwordRules, codeRules } from '@/utils/rules'
-import { loginByPassword, sendMobileCode } from '@/services/user'
+import {
+  loginByMobileCode,
+  loginByPassword,
+  sendMobileCode
+} from '@/services/user'
 import { useUserStore } from '@/stores'
 import { useRoute, useRouter } from 'vue-router'
 import { showToast, type FormInstance } from 'vant'
@@ -27,7 +31,10 @@ const login = async () => {
   if (!agree.value) return showToast('请勾选我已同意')
   // 验证完毕，进行登录
   try {
-    const res = await loginByPassword(mobile.value, password.value)
+    const res = isPass.value
+      ? await loginByPassword(mobile.value, password.value)
+      : await loginByMobileCode(mobile.value, code.value)
+    // 存储用户信息
     store.setUser(res.data)
     // 如果有回跳地址就进行回跳，没有跳转到个人中心
     router.push((route.query.returnUrl as string) || '/user')
