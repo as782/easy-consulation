@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { addPatient, getPatientList } from '@/services/user'
+import { addPatient, editPatient, getPatientList } from '@/services/user'
 import type { PatientList, Patient } from '@/types/user'
 import { computed, onMounted, ref } from 'vue'
 import { nameRules, idCardRules } from '@/utils/rules'
@@ -28,8 +28,14 @@ const options = [
 
 // 添加患者弹窗
 const show = ref(false)
-const showPopup = () => {
-  patient.value = { ...initPatient }
+const showPopup = (item?: Patient) => {
+  if (item) {
+    // 如果点的是编辑，解构出后台需要的数据
+    const { id, gender, name, idCard, defaultFlag } = item
+    patient.value = { id, gender, name, idCard, defaultFlag }
+  } else {
+    patient.value = { ...initPatient }
+  }
   show.value = true
 }
 /** 初始化患者信息 */
@@ -64,11 +70,13 @@ const onSubmit = async () => {
         message: '填写的性别和身份证号中的不一致\n您确认提交吗？'
       })
     }
-    // 添加
-    await addPatient(patient.value)
+    // 添加 & 修改
+    patient.value.id
+      ? await editPatient(patient.value)
+      : await addPatient(patient.value)
     show.value = false
     loadList()
-    showSuccessToast('添加成功')
+    showSuccessToast(patient.value.id ? '编辑成功' : '添加成功')
   } catch (error) {
     console.error(error)
   }
@@ -88,7 +96,9 @@ const onSubmit = async () => {
           <span>{{ item.genderValue }}</span>
           <span>{{ item.age }}岁</span>
         </div>
-        <div class="icon"><cp-icon name="user-edit" /></div>
+        <div @click="showPopup(item)" class="icon">
+          <cp-icon name="user-edit" />
+        </div>
         <div class="tag" v-if="item.defaultFlag === 1">默认</div>
       </div>
       <div class="patient-add" v-if="list.length < 6" @click="showPopup()">
@@ -101,7 +111,7 @@ const onSubmit = async () => {
       <!-- 侧边栏 -->
       <van-popup v-model:show="show" position="right">
         <CpNavBar
-          title="添加患者"
+          :title="patient.id ? '编辑患者' : '添加患者'"
           right-text="保存"
           @click-right="onSubmit"
           :back="() => (show = false)"
