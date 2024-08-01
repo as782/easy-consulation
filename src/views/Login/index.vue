@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { onUnmounted, ref } from 'vue'
+import CpIcon from '@/components/CpIcon.vue'
+
 import { mobileRules, passwordRules, codeRules } from '@/utils/rules'
 import {
   loginByMobileCode,
@@ -71,6 +73,9 @@ const getMobileCode = async () => {
 onUnmounted(() => {
   clearInterval(timer)
 })
+
+/**显示密码 */
+const showPassword = ref(false)
 </script>
 
 <template>
@@ -101,8 +106,16 @@ onUnmounted(() => {
         v-model="password"
         :rules="passwordRules"
         placeholder="请输入密码"
-        type="password"
-      ></van-field>
+        :type="showPassword ? 'text' : 'password'"
+        name="password"
+      >
+        <template #button>
+          <CpIcon
+            :name="`login-eye-${showPassword ? 'on' : 'off'}`"
+            @click="showPassword = !showPassword"
+          ></CpIcon>
+        </template>
+      </van-field>
       <van-field
         v-else
         placeholder="短信验证码"
