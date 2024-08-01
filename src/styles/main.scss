@@ -44,3 +44,8 @@ ol {
   margin: 0;
   padding: 0;
 }
+
+// 覆盖progress组件样式
+#nprogress .bar {
+  background-color: var(--cp-primary) !important;
+}

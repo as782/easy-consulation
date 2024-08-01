@@ -43,6 +43,11 @@ const emit = defineEmits<{
 
     &__text {
       font-size: 15px;
+      color: var(--cp-primary);
+    }
+    &__title {
+      font-size: 20px;
+      font-weight: 700;
     }
   }
 }
