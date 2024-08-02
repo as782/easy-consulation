@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import type { ConsultIllness } from '@/types/consult'
-import { ref } from 'vue'
+import type { ConsultIllness, Image } from '@/types/consult'
+import { uploadImage } from '@/services/consult'
+import { computed, onMounted, ref } from 'vue'
 import type {
   UploaderAfterRead,
   UploaderFileListItem
 } from 'vant/lib/uploader/types'
 
 import { IllnessTime } from '@/enums'
+import { useConsultStore } from '@/stores'
+import { useRouter } from 'vue-router'
+import { showConfirmDialog, showToast } from 'vant'
 
 const timeOptions = [
   { label: '一周内', value: IllnessTime.Week },
@@ -26,13 +30,69 @@ const form = ref<ConsultIllness>({
 })
 
 // 处理患者上传图片
-const fileList = ref([])
+const fileList = ref<Image[]>([])
 const onAfterRead: UploaderAfterRead = (item) => {
-  // TODO 上传图片
+  if (Array.isArray(item)) return
+  if (!item.file) return
+  // 开始上传
+  item.status = 'uploading'
+  item.message = '上传中...'
+  uploadImage(item.file)
+    .then((res) => {
+      item.status = 'done'
+      item.message = undefined
+      item.url = res.data.url
+      form.value.pictures?.push(res.data)
+    })
+    .catch(() => {
+      item.status = 'failed'
+      item.message = '上传失败'
+    })
 }
+/** 删除图片 */
 const onDeleteImg = (item: UploaderFileListItem) => {
-  // TODO 删除图片
+  form.value.pictures = form.value.pictures?.filter(
+    (pic) => pic.url !== item.url
+  )
 }
+/** 提交按钮是否 */
+const disabled = computed(
+  () =>
+    !form.value.illnessDesc ||
+    form.value.illnessTime === undefined ||
+    form.value.consultFlag === undefined
+)
+
+// 提交图文问诊数据
+const store = useConsultStore()
+const router = useRouter()
+const next = () => {
+  if (!form.value.illnessDesc) return showToast('请输入病情描述')
+  if (form.value.illnessTime === undefined)
+    return showToast('请选择症状持续时间')
+  if (form.value.consultFlag === undefined)
+    return showToast('请选择是否已经就诊')
+  store.setIllness(form.value)
+  // 跳转档案管理，需要根据 isChange 实现选择功能
+  router.push('/user/patient?isChange=1')
+}
+
+// 回显数据
+onMounted(() => {
+  if (store.consult.illnessDesc) {
+    showConfirmDialog({
+      title: '温馨提示',
+      message: '是否恢复您之前填写的病情信息呢？',
+      closeOnPopstate: false
+    }).then(() => {
+      // 确认
+      const { illnessDesc, illnessTime, consultFlag, pictures } = store.consult
+      form.value = { illnessDesc, illnessTime, consultFlag, pictures }
+      // 图片回显
+      fileList.value = pictures || []
+    })
+  }
+})
 </script>
 
 <template>
@@ -77,8 +137,13 @@ const onDeleteImg = (item: UploaderFileListItem) => {
           :after-read="onAfterRead"
           @delete="onDeleteImg"
         ></van-uploader>
-        <p class="tip">上传内容仅医生可见,最多9张图,最大5MB</p>
+        <p v-show="!fileList.length" class="tip">
+          上传内容仅医生可见,最多9张图,最大5MB
+        </p>
       </div>
+      <van-button :class="{ disabled }" @click="next" type="primary" block round
+        >下一步</van-button
+      >
     </div>
   </div>
 </template>
@@ -174,6 +239,17 @@ const onDeleteImg = (item: UploaderFileListItem) => {
         color: var(--cp-text3);
       }
     }
+  }
+}
+
+.van-button {
+  font-size: 16px;
+  margin-bottom: 30px;
+  &.disabled {
+    opacity: 1;
+    background: #fafafa;
+    color: #d9dbde;
+    border: #fafafa;
   }
 }
 </style>
