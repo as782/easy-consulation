@@ -42,6 +42,15 @@ const router = createRouter({
       component: () => import('@/views/Consult/ConsultPay.vue'),
       meta: { title: '问诊支付' }
     },
+    {
+      path: '/room',
+      component: () => import('@/views/Room/index.vue'),
+      meta: { title: '问诊室' },
+      beforeEnter(to) {
+        // 进入问诊室前，若支付失败，返回问诊页面
+        if (to.query.payResult === 'false') return '/user/consult'
+      }
+    },
 
     {
       path: '/',
