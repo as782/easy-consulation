@@ -7,9 +7,12 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    copy: typeof import('./src/components/KnowledgeList copy.vue')['default']
     CpIcon: typeof import('./src/components/CpIcon.vue')['default']
     CpNavBar: typeof import('./src/components/CpNavBar.vue')['default']
     CpRadioBtn: typeof import('./src/components/CpRadioBtn.vue')['default']
+    KnowledgeCard: typeof import('./src/components/KnowledgeCard.vue')['default']
+    KnowledgeList: typeof import('./src/components/KnowledgeList.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     VanActionBar: typeof import('vant/es')['ActionBar']
@@ -20,14 +23,20 @@ declare module 'vue' {
     VanCheckbox: typeof import('vant/es')['Checkbox']
     VanCol: typeof import('vant/es')['Col']
     VanDivider: typeof import('vant/es')['Divider']
+    VanEmpty: typeof import('vant/es')['Empty']
     VanField: typeof import('vant/es')['Field']
     VanForm: typeof import('vant/es')['Form']
     VanIcon: typeof import('vant/es')['Icon']
     VanImage: typeof import('vant/es')['Image']
+    VanList: typeof import('vant/es')['List']
     VanNavBar: typeof import('vant/es')['NavBar']
     VanPopup: typeof import('vant/es')['Popup']
     VanRow: typeof import('vant/es')['Row']
+    VanSwipe: typeof import('vant/es')['Swipe']
+    VanSwipeItem: typeof import('vant/es')['SwipeItem']
+    VanTab: typeof import('vant/es')['Tab']
     VanTabbar: typeof import('vant/es')['Tabbar']
     VanTabbarItem: typeof import('vant/es')['TabbarItem']
+    VanTabs: typeof import('vant/es')['Tabs']
   }
 }
