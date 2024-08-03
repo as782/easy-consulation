@@ -1,4 +1,17 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { getUnreadMessageCount } from '@/services/user'
+import { onMounted, ref } from 'vue'
+
+const count = ref<number>(0)
+// 获取未读消息数目
+const getUnreadCount = async () => {
+  const res = await getUnreadMessageCount()
+  count.value = res.data
+}
+onMounted(() => {
+  getUnreadCount()
+})
+</script>
 
 <template>
   <div class="layout-page">
@@ -16,7 +29,7 @@
           <cp-icon :name="`home-article-${active ? 'active' : 'default'}`" />
         </template>
       </van-tabbar-item>
-      <van-tabbar-item to="/notify">
+      <van-tabbar-item to="/notify" :badge="count !== 0 ? count : ''">
         消息中心
         <template #icon="{ active }">
           <cp-icon :name="`home-notice-${active ? 'active' : 'default'}`" />

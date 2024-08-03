@@ -39,3 +39,16 @@ export const delPatient = (id: string) =>
 // 查询患者详情
 export const getPatientDetail = (id: string) =>
   request<Patient>(`/patient/info/${id}`)
+
+/** 获取未读消息数目*/
+export const getUnreadMessageCount = () =>
+  request<number>('/patient/message/unread/all')
+
+/**评价问诊*/
+export const evaluateConsultOrder = (data: {
+  docId: string
+  orderId: string
+  score: number
+  content: string
+  anonymousFlag: 0 | 1
+}) => request<{ id: string }>('/patient/order/evaluate', 'POST', data)
