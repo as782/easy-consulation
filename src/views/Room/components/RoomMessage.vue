@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import type { Message } from '@/types/room'
-import { MsgType } from '@/enums'
+import type { Message, Prescription } from '@/types/room'
+import { MsgType, PrescriptionStatus } from '@/enums'
 import type { Image } from '@/types/consult'
-import { showImagePreview } from 'vant'
+import { showImagePreview, showToast } from 'vant'
 import dayjs from 'dayjs'
 import { useUserStore } from '@/stores'
 
 import EvaluateCard from './EvaluateCard.vue'
 import { useShowPrescription } from '@/composables'
 import { getConsultFlagText, getIllnessTimeText } from '@/utils/filter'
+import { useRouter } from 'vue-router'
 
 const { list } = defineProps<{
   list: Message[]
@@ -24,13 +25,17 @@ const onPreviewImage = (pictures?: Image[]) => {
 // 时间格式
 const formatTime = (time: string) => dayjs(time).format('HH:mm')
 
-// // 处方图片预览
-// const showPrescription = async (id?: string) => {
-//   if (id) {
-//     const res = await getPrescriptionPic(id)
-//     showImagePreview([res.data.url])
-//   }
-// }
+// 点击处方的跳转
+const router = useRouter()
+const buy = (pre?: Prescription) => {
+  if (pre) {
+    if (pre.status === PrescriptionStatus.Invalid)
+      return showToast('处方已失效')
+    if (pre.status === PrescriptionStatus.NotPayment && !pre.orderId)
+      return router.push(`/order/pay?id=${pre.id}`)
+    router.push(`/order/${pre.orderId}`)
+  }
+}
 
 const { onShowPrescription } = useShowPrescription()
 </script>
@@ -159,8 +164,8 @@ const { onShowPrescription } = useShowPrescription()
           </div>
         </div>
         <div class="foot">
-          <!-- <span @click="buy(item.msg.prescription)">购买药品</span> -->
-          <span>购买药平</span>
+          <span @click="buy(item.msg.prescription)">购买药品</span>
+          <!-- <span>购买药平</span> -->
         </div>
       </div>
     </div>

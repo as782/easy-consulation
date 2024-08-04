@@ -172,6 +172,7 @@ onMounted(() => {
       :order-id="orderId"
       :actualPayment="payInfo.actualPayment"
       :onClose="onClose"
+      payCallback="/room"
     />
   </div>
   <!-- 骨架屏-->
