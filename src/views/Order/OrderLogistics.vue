@@ -1,16 +1,102 @@
 <script setup lang="ts">
 import { getMedicalOrderLogistics } from '@/services/order'
-import type { Logistics } from '@/types/order'
+import type { Location, Logistics } from '@/types/order'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-
+import AMapLoader from '@amap/amap-jsapi-loader'
+import startImg from '@/assets/start.png'
+import endImg from '@/assets/end.png'
+import carImg from '@/assets/car.png'
 // 获取物流信息
 const logistics = ref<Logistics>()
 const route = useRoute()
 onMounted(async () => {
   const res = await getMedicalOrderLogistics(route.params.id as string)
   logistics.value = res.data
+  initGAODEMap()
 })
+
+// 初始化高德地图
+const initGAODEMap = () => {
+  AMapLoader.load({
+    key: '8807a43a8b7c9ce84b141c3d768cd05e',
+    version: '2.0'
+  }).then((AMap) => {
+    // 使用 Amap 初始化地图 找到元素id为map
+    const map = new AMap.Map('map', {
+      mapStyle: 'amap://styles/whitesmoke',
+      zoom: 12
+    })
+    // 使用地图路线规划插件
+    AMap.plugin('AMap.Driving', function () {
+      // 实例化Driving
+      const driving = new AMap.Driving({
+        map: map,
+        showTraffic: false, //设置是否显示实时路况信息，
+        hideMarkers: true
+      })
+
+      if (
+        logistics.value?.logisticsInfo &&
+        logistics.value.logisticsInfo.length >= 2
+      ) {
+        const list = [...logistics.value.logisticsInfo]
+
+        // 创建标记函数,
+        const getMarker = (
+          point: Location,
+          image: string,
+          width = 25,
+          height = 30
+        ) => {
+          // 创建图标
+          const icon = new AMap.Icon({
+            size: new AMap.Size(width, height),
+            image,
+            imageSize: new AMap.Size(width, height)
+          })
+          const marker = new AMap.Marker({
+            position: [point?.longitude, point?.latitude],
+            icon: icon,
+            offset: new AMap.Pixel(-width / 2, -height)
+          })
+          return marker
+        }
+
+        // 起点
+        const start = list.shift()
+        const startMarker = getMarker(start!, startImg)
+        map.add(startMarker)
+        // 终点
+        const end = list.pop()
+        const endMarker = getMarker(end!, endImg)
+        map.add(endMarker)
+        // 搜索路线
+        // 根据起点、终点和途经点（可选）坐标或名称，实现驾车路线规划，途经点通过opts设定
+        driving.search(
+          [start?.longitude, start?.latitude],
+          [end?.longitude, end?.latitude],
+          { waypoints: list.map((item) => [item.longitude, item.latitude]) },
+          () => {
+            // 规划完毕
+            // 运输位置
+            const curr = logistics.value?.currentLocationInfo
+            const currMarker = getMarker(curr!, carImg, 33, 20)
+            map.add(currMarker)
+            // 3s后定位当中间进行缩放
+            setTimeout(() => {
+              map.setFitView([currMarker])
+              map.setZoom(10)
+            }, 3000)
+          }
+        )
+      }
+    })
+  })
+}
+window._AMapSecurityConfig = {
+  securityJsCode: '67da68c2357bbce2af7ac5a785fc792f'
+}
 </script>
 
 <template>
