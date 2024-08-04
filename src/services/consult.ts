@@ -1,5 +1,7 @@
 import type {
   ConsultOrderItem,
+  ConsultOrderListParams,
+  ConsultOrderPage,
   ConsultOrderPreData,
   ConsultOrderPreParams,
   DoctorPage,
@@ -58,3 +60,14 @@ export const getConsultOrderDetail = (orderId: string) =>
 /**查看处方*/
 export const getPrescriptionPic = (id: string) =>
   request<{ url: string }>(`/patient/consult/prescription/${id}`)
+
+/** 获取问诊订单列表*/
+export const getConsultOrderList = (params: ConsultOrderListParams) =>
+  request<ConsultOrderPage>('/patient/consult/order/list', 'GET', params)
+
+/** 取消订单*/
+export const cancelOrder = (id: string) =>
+  request(`/patient/order/cancel/${id}`, 'PUT')
+/** 删除订单*/
+export const deleteOrder = (id: string) =>
+  request(`/patient/order/${id}`, 'DELETE')

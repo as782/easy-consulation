@@ -1,26 +1,19 @@
 <script setup lang="ts">
-import type { IllnessTime } from '@/enums'
-import { flagOptions, timeOptions } from '@/services/constants'
 import type { Message } from '@/types/room'
 import { MsgType } from '@/enums'
 import type { Image } from '@/types/consult'
 import { showImagePreview } from 'vant'
 import dayjs from 'dayjs'
 import { useUserStore } from '@/stores'
-import { getPrescriptionPic } from '@/services/consult'
+
 import EvaluateCard from './EvaluateCard.vue'
+import { useShowPrescription } from '@/composables'
+import { getConsultFlagText, getIllnessTimeText } from '@/utils/filter'
 
 const { list } = defineProps<{
   list: Message[]
 }>()
 const store = useUserStore()
-
-/** 病情时间 转换文字 */
-const getIllnessTimeText = (time: IllnessTime) =>
-  timeOptions.find((item) => item.value === time)?.label
-/** 就诊情况 转换文字 */
-const getConsultFlagText = (flag: 0 | 1) =>
-  flagOptions.find((item) => item.value === flag)?.label
 
 // 病情图片预览
 const onPreviewImage = (pictures?: Image[]) => {
@@ -31,13 +24,15 @@ const onPreviewImage = (pictures?: Image[]) => {
 // 时间格式
 const formatTime = (time: string) => dayjs(time).format('HH:mm')
 
-// 处方图片预览
-const showPrescription = async (id?: string) => {
-  if (id) {
-    const res = await getPrescriptionPic(id)
-    showImagePreview([res.data.url])
-  }
-}
+// // 处方图片预览
+// const showPrescription = async (id?: string) => {
+//   if (id) {
+//     const res = await getPrescriptionPic(id)
+//     showImagePreview([res.data.url])
+//   }
+// }
+
+const { onShowPrescription } = useShowPrescription()
 </script>
 <!-- http://localhost:5173/room?orderId=7055990719692800&payResult=true&type=2 -->
 <template>
@@ -138,7 +133,7 @@ const showPrescription = async (id?: string) => {
         <div class="head van-hairline--bottom">
           <div class="head-tit">
             <h3>电子处方</h3>
-            <p @click="showPrescription(item.msg.prescription?.id)">
+            <p @click="onShowPrescription(item.msg.prescription?.id)">
               显示原始处方
             </p>
           </div>

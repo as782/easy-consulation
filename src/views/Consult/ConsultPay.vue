@@ -124,28 +124,6 @@ onMounted(() => {
   loadData()
   loadPatient()
 })
-
-// 获取支付地址 ，完成支付
-// 测试账号：askgxl8276@sandbox.com 或者 scobys4865@sandbox.com
-// 登录密码：111111
-// 支付密码：111111
-
-// 跳转支付
-const pay = async () => {
-  if (paymentMethod.value === undefined) return showToast('请选择支付方式')
-  try {
-    showLoadingToast({ message: '跳转支付', duration: 0 })
-    const res = await getConsultOrderPayUrl({
-      orderId: orderId.value,
-      paymentMethod: paymentMethod.value,
-      payCallback: 'http://localhost:5173/room' // 支付成功后跳转的地址
-    })
-    // 成功后打开支付地址
-    window.location.href = res.data.payUrl
-  } catch (error) {
-    console.error(error)
-  }
-}
 </script>
 
 <template>
@@ -189,39 +167,15 @@ const pay = async () => {
       @click="submit"
       :loading="loading"
     />
-    <van-action-sheet
+    <cp-pay-sheet
       v-model:show="show"
-      title="选择支付方式"
-      :close-on-popstate="false"
-      :closeable="false"
-      :before-close="onClose"
-    >
-      <div class="pay-type">
-        <p class="amount">￥{{ payInfo?.actualPayment.toFixed(2) }}</p>
-        <van-cell-group>
-          <van-cell title="微信支付" @click="paymentMethod = 0">
-            <template #icon><cp-icon name="consult-wechat" /></template>
-            <template #extra
-              ><van-checkbox :checked="paymentMethod === 0"
-            /></template>
-          </van-cell>
-          <van-cell title="支付宝支付" @click="paymentMethod = 1">
-            <template #icon><cp-icon name="consult-alipay" /></template>
-            <template #extra
-              ><van-checkbox :checked="paymentMethod === 1"
-            /></template>
-          </van-cell>
-        </van-cell-group>
-        <div class="btn">
-          <van-button type="primary" round block @click="pay">
-            立即支付
-          </van-button>
-        </div>
-      </div>
-    </van-action-sheet>
+      :order-id="orderId"
+      :actualPayment="payInfo.actualPayment"
+      :onClose="onClose"
+    />
   </div>
   <!-- 骨架屏-->
-  <div class="consult-pay-page">
+  <div class="consult-pay-page" v-if="!payInfo">
     <cp-nav-bar title="支付" />
     <van-skeleton title :row="10" style="margin-top: 18px"></van-skeleton>
   </div>

@@ -23,6 +23,16 @@ const router = createRouter({
       meta: { title: '家庭档案' }
     },
     {
+      path: '/user/consult',
+      component: () => import('@/views/User/ConsultPage.vue'),
+      meta: { title: '问诊记录' }
+    },
+    {
+      path: '/user/consult/:id',
+      component: () => import('@/views/User/ConsultDetail.vue'),
+      meta: { title: '问诊详情' }
+    },
+    {
       path: '/consult/fast',
       component: () => import('@/views/Consult/ConsultFast.vue'),
       meta: { title: '极速问诊' }
