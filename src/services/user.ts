@@ -52,3 +52,14 @@ export const evaluateConsultOrder = (data: {
   content: string
   anonymousFlag: 0 | 1
 }) => request<{ id: string }>('/patient/order/evaluate', 'POST', data)
+
+// QQ 登录
+export const loginByQQ = (openId: string) =>
+  request<User>('/login/thirdparty', 'POST', { openId, source: 'qq' })
+
+// 绑定手机
+export const bindMobile = (data: {
+  mobile: string
+  code: string
+  openId: string
+}) => request<User>('/login/binding', 'POST', data)

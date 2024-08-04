@@ -1,4 +1,4 @@
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, type Ref } from 'vue'
 import {
   cancelOrder,
   deleteOrder,
@@ -6,10 +6,18 @@ import {
   getPrescriptionPic
 } from '@/services/consult'
 import type { ConsultOrderItem, FollowType } from '@/types/consult'
-import { showFailToast, showImagePreview, showSuccessToast } from 'vant'
+import {
+  showFailToast,
+  showImagePreview,
+  showSuccessToast,
+  showToast,
+  type FormInstance
+} from 'vant'
 import { OrderType } from '@/enums'
 import { getMedicalOrderDetail } from '@/services/order'
 import type { OrderDetail } from '@/types/order'
+import type { CodeType } from '@/types/user'
+import { sendMobileCode } from '@/services/user'
 
 // 封装逻辑，规范 useXxx，表示使用某功能
 export const useFollow = (type: FollowType = 'doc') => {
@@ -90,4 +98,31 @@ export const useOrderDetail = (id: string) => {
     }
   })
   return { order, loading }
+}
+
+/// 发送短信验证码吗逻辑
+export const useSendMobileCode = (
+  mobile: Ref<string>,
+  type: CodeType = 'login'
+) => {
+  const form = ref<FormInstance>()
+  const time = ref(0)
+  let timeId: number
+  const onSend = async () => {
+    if (time.value > 0) return
+    await form.value?.validate('mobile')
+    await sendMobileCode(mobile.value, type)
+    showToast('发送成功')
+    time.value = 60
+    // 倒计时
+    clearInterval(timeId)
+    timeId = setInterval(() => {
+      time.value--
+      if (time.value <= 0) clearInterval(timeId)
+    }, 1000)
+  }
+  onUnmounted(() => {
+    clearInterval(timeId)
+  })
+  return { form, time, onSend }
 }
