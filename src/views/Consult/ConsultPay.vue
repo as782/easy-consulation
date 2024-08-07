@@ -1,19 +1,16 @@
 <script setup lang="ts">
-import {
-  createConsultOrder,
-  getConsultOrderPayUrl,
-  getConsultOrderPre
-} from '@/services/consult'
+import { ConsultType } from '@/enums'
+import { createConsultOrder, getConsultOrderPre } from '@/services/consult'
 import { getPatientDetail } from '@/services/user'
 import { useConsultStore } from '@/stores'
-import type { ConsultOrderPreData, PartialConsult } from '@/types/consult'
+import type {
+  ConsultOrderPreData,
+  ConsultOrderPreParams,
+  PartialConsult
+} from '@/types/consult'
 import type { Patient } from '@/types/user'
-import {
-  showConfirmDialog,
-  showDialog,
-  showLoadingToast,
-  showToast
-} from 'vant'
+import { getCreateOrderParams } from '@/utils/createOrderParams'
+import { showConfirmDialog, showDialog, showToast } from 'vant'
 import { onMounted, ref } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
@@ -22,18 +19,21 @@ const store = useConsultStore()
 // 获取订单预支付信息
 const payInfo = ref<ConsultOrderPreData>()
 const loadData = async () => {
-  try {
-    const res = await getConsultOrderPre({
-      type: store.consult.type,
-      illnessType: store.consult.illnessType
-    })
-    payInfo.value = res.data
-    // 设置默认优惠券
-    store.setCoupon(payInfo.value.couponId)
-  } catch (error) {
-    console.error(error)
+  // 问医生和极速问诊都需要type和illnessType
+  const params: ConsultOrderPreParams = {
+    type: store.consult.type,
+    illnessType: store.consult.illnessType
   }
+  // 问医生需要带上docId
+  if (store.consult.docId) {
+    params.docId = store.consult.docId
+  }
+  const res = await getConsultOrderPre(params)
+  payInfo.value = res.data
+  // 记录优惠券ID
+  store.setCoupon(res.data.couponId)
 }
+
 // 获取患者信息
 const patient = ref<Patient>()
 const loadPatient = async () => {
@@ -50,7 +50,7 @@ const loadPatient = async () => {
 const agree = ref(false)
 const show = ref(false)
 /**支付方式 0:微信 1:支付宝*/
-const paymentMethod = ref<0 | 1>()
+
 const loading = ref(false)
 /** 订单id */
 const orderId = ref('')
@@ -59,7 +59,9 @@ const submit = async () => {
   if (!agree.value) return showToast('请勾选我已同意支付协议')
   loading.value = true
   try {
-    const res = await createConsultOrder(store.consult)
+    const type = store.consult.type
+    const params = getCreateOrderParams(store.consult, type)
+    const res = await createConsultOrder(params)
     orderId.value = res.data.id
     loading.value = false
     store.clear()
@@ -108,6 +110,10 @@ onMounted(() => {
     'consultFlag',
     'patientId'
   ]
+  if (store.consult.type === ConsultType.Doctor) {
+    // 问医生，必填字段加一个docId
+    validKeys.push('docId')
+  }
   // 检验问诊记录中 ，问诊信息是否完整
   const valid = validKeys.every((key) => store.consult[key] !== undefined)
   if (!valid) {
@@ -133,9 +139,15 @@ onMounted(() => {
       <p class="tit">图文问诊 {{ payInfo.payment }} 元</p>
       <img class="img" src="@/assets/avatar-doctor.svg" />
       <p class="desc">
-        <span>极速问诊</span>
-        <span>自动分配医生</span>
+        <!-- 问医生 | 极速问诊 -->
+        <span>{{
+          store.consult.type === ConsultType.Doctor ? '问医生' : '极速问诊'
+        }}</span>
+        <span>{{
+          store.consult.type === ConsultType.Doctor ? '' : '自动分配医生'
+        }}</span>
       </p>
+      <p class="tag"></p>
     </div>
     <van-cell-group>
       <van-cell title="优惠券" :value="`-¥${payInfo.couponDeduction}`" />

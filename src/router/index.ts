@@ -43,6 +43,22 @@ const router = createRouter({
       meta: { title: '问诊详情' }
     },
     {
+      path: '/consult/doctor',
+      component: () => import('@/views/Consult/ConsultDoctor.vue'),
+      meta: { title: '找医生' }
+    },
+    {
+      path: '/doctorList/:depId',
+      component: () => import('@/views/Consult/ConsultDoctorList.vue'),
+      meta: { title: '医生搜索' }
+    },
+    {
+      path: '/doctorDetail/:id',
+      component: () => import('@/views/Consult/ConsultDoctorDetail.vue'),
+      meta: { title: '医生详情' }
+    },
+
+    {
       path: '/consult/fast',
       component: () => import('@/views/Consult/ConsultFast.vue'),
       meta: { title: '极速问诊' }

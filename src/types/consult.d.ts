@@ -5,6 +5,8 @@ import type {
   IllnessTime,
   LiverFunction,
   OrderType,
+  PositionalTitles,
+  PriceRange,
   RenalFunction
 } from '@/enums'
 import type { Patient } from './user'
@@ -108,6 +110,32 @@ export type DoctorPage = {
   rows: DoctorList
 }
 
+/**
+ * 医生列表排序
+ * default_ascend 综合排序
+ * score_ascend 评分
+ * consultationNum_ascend 咨询量
+ * serviceFee_ascend 价格
+ */
+export type DoctorOrderType =
+  | 'default_ascend'
+  | 'score_ascend'
+  | 'consultationNum_ascend'
+  | 'serviceFee_ascend'
+
+/**请求医生的参数*/
+export type DoctorParams = PageParams & {
+  provinceId: string
+  depId: string
+  order: DoctorOrderType
+  /** 医院等级 */
+  grade?: string
+  /** 职称 */
+  positionalTitles?: PositionalTitles
+  /** 价格范围 */
+  priceRange?: PriceRange
+}
+
 /**  关注的类型，医生|文章|百科话题|疾病*/
 export type FollowType = 'doc' | 'knowledge' | 'topic' | 'disease'
 
@@ -152,6 +180,9 @@ export type Consult = {
 
   /** 药品 */
   medicines: Medical[]
+
+  /** 医生Id */
+  docId: string
 }
 
 /*** 患者的问诊记录-全部可选*/
@@ -164,6 +195,7 @@ export type SubDep = {
   id: string
   /** 科室名称 */
   name: string
+  avatar?: string
 }
 
 /** 主科室*/
@@ -179,7 +211,10 @@ export type ConsultIllness = Pick<
 >
 
 /** 问诊订单预支付传参*/
-export type ConsultOrderPreParams = Pick<PartialConsult, 'type' | 'illnessType'>
+export type ConsultOrderPreParams = Pick<
+  PartialConsult,
+  'type' | 'illnessType' | 'docId'
+>
 
 /** 问诊订单预支付信息*/
 export type ConsultOrderPreData = {
@@ -296,4 +331,18 @@ export type MedicineDetail = Medical & {
   createTime: string
   updateTime: string
   deleteState: number
+}
+
+/* 地区 */
+export type Area = {
+  id: string
+  parentId: string
+  name: string
+  citys?: City[]
+}
+/** 城市 */
+export type City = {
+  id: string
+  parentId: string
+  name: string
 }

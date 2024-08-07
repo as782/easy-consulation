@@ -128,3 +128,25 @@ export enum FertilityStatus {
   /** 哺乳期 */
   Breastfeeding
 }
+/**医生级别*/
+export enum PositionalTitles {
+  /** 主任医师 */
+  ChiefPhysician,
+  /** 副主任医师 */
+  AssociateChiefPhysician,
+  /** 主治医师 */
+  AttendingPhysician,
+  /** 医师 */
+  Physician
+}
+/**价格区间*/
+export enum PriceRange {
+  /** 价格区间 0-19 */
+  ZeroToNineteen = '0_19',
+  /** 价格区间 20-49 */
+  TwentyToFortyNine = '20_49',
+  /** 价格区间 50-79 */
+  FiftyToSeventyNine = '50_79',
+  /** 价格区间 80以上 */
+  MoreThanEighty = '80'
+}

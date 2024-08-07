@@ -3,6 +3,8 @@ import {
   FertilityStatus,
   IllnessTime,
   LiverFunction,
+  PositionalTitles,
+  PriceRange,
   RenalFunction
 } from '@/enums'
 
@@ -43,6 +45,27 @@ export const fertilityStatusOptions = [
   { label: '备孕中', value: FertilityStatus.TryingToConceive },
   { label: '已怀孕', value: FertilityStatus.AlreadyPregnant },
   { label: '哺乳期中', value: FertilityStatus.Breastfeeding }
+]
+/**医院等级*/
+export const gradeOptions = [
+  { label: '三级甲等', value: 9 }
+  // { label: '特等', value: 10 }
+]
+
+// 医师职称
+export const positionalTitlesOptions = [
+  { label: '主任医师', value: PositionalTitles.ChiefPhysician },
+  { label: '副主任医师', value: PositionalTitles.AssociateChiefPhysician },
+  { label: '主治医师', value: PositionalTitles.AttendingPhysician },
+  { label: '医师', value: PositionalTitles.Physician }
+]
+
+// 价格区间
+export const priceRangeOptions = [
+  { label: '0-19', value: PriceRange.ZeroToNineteen },
+  { label: '20-49', value: PriceRange.TwentyToFortyNine },
+  { label: '50-79', value: PriceRange.FiftyToSeventyNine },
+  { label: '80以上', value: PriceRange.MoreThanEighty }
 ]
 
 // 获取支付地址 ，完成支付

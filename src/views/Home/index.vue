@@ -24,7 +24,11 @@ const active = ref(1)
     <div class="home-navs">
       <van-row>
         <van-col span="8">
-          <router-link to="/" class="nav">
+          <router-link
+            to="/consult/doctor"
+            class="nav"
+            @click="store.setType(ConsultType.Doctor)"
+          >
             <cp-icon name="home-doctor"></cp-icon>
             <p class="title">问医生</p>
             <p class="desc">按科室查问医生</p>

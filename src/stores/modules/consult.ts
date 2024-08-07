@@ -73,6 +73,9 @@ export const useConsultStore = defineStore(
     }
     // // 记录问药门诊药品
     const setMedicines = (val: Medical[]) => (consult.value.medicines = val)
+
+    // 记录医生ID
+    const setDocId = (val: string) => (consult.value.docId = val)
     return {
       consult,
       setType,
@@ -83,7 +86,8 @@ export const useConsultStore = defineStore(
       setCoupon,
       clear,
       setMedicineIlness,
-      setMedicines
+      setMedicines,
+      setDocId
     }
   },
   {

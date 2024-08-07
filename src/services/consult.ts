@@ -1,10 +1,13 @@
 import type {
+  Area,
   ConsultOrderItem,
   ConsultOrderListParams,
   ConsultOrderPage,
   ConsultOrderPreData,
   ConsultOrderPreParams,
+  Doctor,
   DoctorPage,
+  DoctorParams,
   FollowType,
   Image,
   KnowledgePage,
@@ -30,6 +33,13 @@ export const getDoctorPage = (params: PageParams) =>
 /** 关注医生 */
 export const followOrUnfollow = (id: string, type: FollowType = 'doc') =>
   request('/like', 'POST', { id, type })
+
+/** 获取医生详情*/
+export const getDoctorDetail = (id: string) => {
+  return request<Doctor>(`doc/detail`, 'GET', {
+    docId: id
+  })
+}
 
 /** 获取科室列表 */
 export const getAllDep = () => request<TopDep[]>('/dep/all')
@@ -83,4 +93,14 @@ export const getMedicinePage = (params: MedicineParams) => {
 // 获取药品详情
 export const getMedicineDetail = (id: string) => {
   return request<MedicineDetail>(`patient/medicine/${id}`)
+}
+
+/**找医生*/
+export const getFindDoctorPage = (params: DoctorParams) => {
+  return request<DoctorPage>('/patient/search/doc', 'GET', params)
+}
+
+/**获取地区区*/
+export const getAllBasicArea = () => {
+  return request<Area[]>('basicArea/all')
 }
