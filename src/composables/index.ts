@@ -19,7 +19,7 @@ import type { OrderDetail } from '@/types/order'
 import type { CodeType } from '@/types/user'
 import { sendMobileCode } from '@/services/user'
 
-// 封装逻辑，规范 useXxx，表示使用某功能
+// 封装关注
 export const useFollow = (type: FollowType = 'doc') => {
   const loading = ref(false)
   // {a, b} 类型，传值得时候 {a, b, c} 也可以，这是类型兼容：多的可以给少的

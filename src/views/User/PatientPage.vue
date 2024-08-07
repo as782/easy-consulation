@@ -31,11 +31,20 @@ const selectedPatient = (item: Patient) => {
 
 const store = useConsultStore()
 const router = useRouter()
+// 是否来自药品咨询
+const fromMedicineConsultFlag = computed(
+  () => route.query.from === 'medicineConsult'
+)
+
 // 选完患者后下一步
 const next = async () => {
-  if (!patientId.value) return showToast('请选就诊择患者')
+  if (!patientId.value) return showToast('请选择患者')
   store.setPatient(patientId.value)
-  router.push('/consult/pay')
+  if (fromMedicineConsultFlag.value) {
+    router.push('/consult/choose')
+  } else {
+    router.push('/consult/pay')
+  }
 }
 
 // --------------家庭档案时的操作----------

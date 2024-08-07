@@ -1,5 +1,14 @@
-import type { ConsultType, IllnessTime, OrderType } from '@/enums'
+import type {
+  AllergicHistory,
+  ConsultType,
+  FertilityStatus,
+  IllnessTime,
+  LiverFunction,
+  OrderType,
+  RenalFunction
+} from '@/enums'
 import type { Patient } from './user'
+import type { Medical } from './room'
 
 /** 文章信息类型 */
 export type Knowledge = {
@@ -131,6 +140,18 @@ export type Consult = {
   patientId: string
   /** 优惠券ID */
   couponId: string
+
+  /** 肝功能 */
+  liverFunction: LiverFunction
+  /** 肾功能 */
+  renalFunction: RenalFunction
+  /** 过敏史 */
+  allergicHistory: AllergicHistory
+  /** 生育状态及计划 */
+  fertilityStatus: FertilityStatus
+
+  /** 药品 */
+  medicines: Medical[]
 }
 
 /*** 患者的问诊记录-全部可选*/
@@ -216,4 +237,63 @@ export type ConsultOrderPage = {
   pageTotal: number
   total: number
   rows: ConsultOrderItem[]
+}
+
+// 开药问诊部分
+
+export type MedicineIllness = Pick<
+  PartialConsult,
+  | 'illnessDesc'
+  | 'liverFunction'
+  | 'renalFunction'
+  | 'allergicHistory'
+  | 'fertilityStatus'
+  | 'pictures'
+>
+
+// 药品列表查询参数
+export type MedicineParams = PageParams & {
+  keyword: string
+}
+
+// 药品列表
+export type MedicineList = Medical[]
+// 药品列表带分页
+export type MedicinePage = {
+  pageTotal: number
+  total: number
+  rows: MedicineList
+}
+
+/**药品详情*/
+export type MedicineDetail = Medical & {
+  /** 品牌 */
+  brand: string
+  brandId?: any
+  /** 生产企业 */
+  manufacturer: string
+  /** 批准文号 */
+  approvalNo: string
+  /** 有效期 */
+  expiration: string
+  classify: string
+  classifyId: string
+  /** 功能主治 */
+  indicationsFunction: string
+  /** 禁忌 */
+  contraindication: string
+  /** 不良反应 */
+  untowardReaction: string
+  /** 注意事项 */
+  preparation: string
+  /** 执行标准 */
+  standard: string
+  /** 药品图片 */
+  mainPictures: string[]
+
+  creator: string
+  updator: string
+  createTime: string
+  updateTime: string
+  deleteState: number
 }

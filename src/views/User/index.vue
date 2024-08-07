@@ -20,7 +20,8 @@ const tools = [
   { label: '地址管理', path: '/user/address' },
   { label: '我的评价', path: '/' },
   { label: '官方客服', path: '/' },
-  { label: '设置', path: '/' }
+  { label: '设置', path: '/' },
+  { label: '超级医生', path: '/superDoctor' }
 ]
 
 // 退出登录处理

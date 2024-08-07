@@ -8,8 +8,16 @@ import { useUserStore } from '@/stores'
 
 import EvaluateCard from './EvaluateCard.vue'
 import { useShowPrescription } from '@/composables'
-import { getConsultFlagText, getIllnessTimeText } from '@/utils/filter'
-import { useRouter } from 'vue-router'
+import {
+  getConsultFlagText,
+  getIllnessTimeText,
+  getLiverFunctionText,
+  getRenalFunctionText,
+  getAllergicHistoryText,
+  getFertilityStatusText
+} from '@/utils/filter'
+import { useRoute, useRouter } from 'vue-router'
+import { computed } from 'vue'
 
 const { list } = defineProps<{
   list: Message[]
@@ -38,6 +46,10 @@ const buy = (pre?: Prescription) => {
 }
 
 const { onShowPrescription } = useShowPrescription()
+
+const route = useRoute()
+// 区分开药问诊| 极速问诊| 问医生 跳转过来的
+const fromPage = computed(() => route.query.from)
 </script>
 <!-- http://localhost:5173/room?orderId=7055990719692800&payResult=true&type=2 -->
 <template>
@@ -51,11 +63,36 @@ const { onShowPrescription } = useShowPrescription()
           {{ item.msg.consultRecord?.patientInfo.age }}岁
         </p>
         <p v-if="item.msg.consultRecord">
-          {{ getIllnessTimeText(item.msg.consultRecord?.illnessTime) }} |
-          {{ getConsultFlagText(item.msg.consultRecord?.consultFlag) }}
+          <span v-if="fromPage === 'medicine'">
+            肝功能
+            {{ getLiverFunctionText(item.msg.consultRecord.liverFunction) }} |
+            肾功能
+            {{ getRenalFunctionText(item.msg.consultRecord.renalFunction) }} |
+            过敏史
+            {{ getAllergicHistoryText(item.msg.consultRecord.allergicHistory) }}
+            | 生育状态
+            {{ getFertilityStatusText(item.msg.consultRecord.fertilityStatus) }}
+          </span>
+
+          <span v-else>
+            {{ getIllnessTimeText(item.msg.consultRecord?.illnessTime) }} |
+            {{ getConsultFlagText(item.msg.consultRecord?.consultFlag) }}
+          </span>
         </p>
       </div>
       <van-row>
+        <van-col span="6" v-if="fromPage === 'medicine'">用药需求</van-col>
+        <van-col span="18" v-if="fromPage === 'medicine'">
+          {{
+            item.msg.consultRecord?.medicines
+              .map(
+                (item) => `${item.name}
+  ${item.specs} X${item.quantity}`
+              )
+              .join(',')
+          }}
+        </van-col>
+
         <van-col span="6">病情描述</van-col>
         <van-col span="18">{{ item.msg.consultRecord?.illnessDesc }}</van-col>
         <van-col span="6">图片</van-col>

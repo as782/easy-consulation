@@ -18,6 +18,11 @@ const router = createRouter({
       meta: { title: '登录' }
     },
     {
+      path: '/superDoctor',
+      component: () => import('@/views/User/SuperDoctor.vue'),
+      meta: { title: '超级医生' }
+    },
+    {
       path: '/login/callback',
       component: () => import('@/views/Login/LoginCallback.vue'),
       meta: { title: 'QQ登录-绑定手机' }
@@ -56,6 +61,21 @@ const router = createRouter({
       path: '/consult/pay',
       component: () => import('@/views/Consult/ConsultPay.vue'),
       meta: { title: '问诊支付' }
+    },
+    {
+      path: '/consult/medicine',
+      component: () => import('@/views/Consult/ConsultMedicine.vue'),
+      meta: { title: '开药门诊' }
+    },
+    {
+      path: '/consult/choose',
+      component: () => import('@/views/Consult/ConsultChoose.vue'),
+      meta: { title: '选择药品' }
+    },
+    {
+      path: '/medicineDetail/:id',
+      component: () => import('@/views/Consult/ConsultMedicineDetail.vue'),
+      meta: { title: '药品详情' }
     },
     {
       path: '/order/pay',

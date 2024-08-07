@@ -9,6 +9,9 @@ import type {
   Image,
   KnowledgePage,
   KnowledgeParams,
+  MedicineDetail,
+  MedicinePage,
+  MedicineParams,
   PageParams,
   PartialConsult,
   TopDep
@@ -71,3 +74,13 @@ export const cancelOrder = (id: string) =>
 /** 删除订单*/
 export const deleteOrder = (id: string) =>
   request(`/patient/order/${id}`, 'DELETE')
+
+// 获取药品列表
+export const getMedicinePage = (params: MedicineParams) => {
+  return request<MedicinePage>('patient/medicine', 'GET', params)
+}
+
+// 获取药品详情
+export const getMedicineDetail = (id: string) => {
+  return request<MedicineDetail>(`patient/medicine/${id}`)
+}

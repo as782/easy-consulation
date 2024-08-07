@@ -1,4 +1,10 @@
-import { IllnessTime } from '@/enums'
+import {
+  AllergicHistory,
+  FertilityStatus,
+  IllnessTime,
+  LiverFunction,
+  RenalFunction
+} from '@/enums'
 
 export const timeOptions = [
   { label: '一周内', value: IllnessTime.Week },
@@ -12,6 +18,32 @@ export const flagOptions = [
 ]
 /** 支付成功后的返回地址*/
 export const payCallbackUrl = 'http://localhost:5173'
+
+// 肝功能
+export const liverFunctionOptions = [
+  { label: '正常', value: LiverFunction.Normal },
+  { label: '异常', value: LiverFunction.Abnormal },
+  { label: '不清楚', value: LiverFunction.Unclear }
+]
+// 肾功能
+export const renalFunctionOptions = [
+  { label: '正常', value: RenalFunction.Normal },
+  { label: '异常', value: RenalFunction.Abnormal },
+  { label: '不清楚', value: RenalFunction.Unclear }
+]
+// 过敏史
+export const allergicHistoryOptions = [
+  { label: '正常', value: AllergicHistory.Normal },
+  { label: '异常', value: AllergicHistory.Abnormal },
+  { label: '不清楚', value: AllergicHistory.Unclear }
+]
+// 生育状态及计划
+export const fertilityStatusOptions = [
+  { label: '无', value: FertilityStatus.No },
+  { label: '备孕中', value: FertilityStatus.TryingToConceive },
+  { label: '已怀孕', value: FertilityStatus.AlreadyPregnant },
+  { label: '哺乳期中', value: FertilityStatus.Breastfeeding }
+]
 
 // 获取支付地址 ，完成支付
 // 测试账号：askgxl8276@sandbox.com 或者 scobys4865@sandbox.com
