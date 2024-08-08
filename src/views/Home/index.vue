@@ -14,7 +14,7 @@ const active = ref(1)
     <!-- 头部 -->
     <div class="home-header">
       <div class="con">
-        <h1>优医</h1>
+        <h1><img class="icon" src="@/assets/logo.png" alt="" />省心问诊</h1>
         <div class="search">
           <cp-icon name="home-search" /> 搜一搜：疾病/症状/医生/健康知识
         </div>
@@ -137,6 +137,11 @@ const active = ref(1)
   .con {
     position: relative;
     padding: 0 15px;
+    .icon {
+      width: 30px;
+      height: 30px;
+      margin: 0 10px;
+    }
 
     > h1 {
       font-size: 18px;

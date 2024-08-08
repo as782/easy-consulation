@@ -8,11 +8,13 @@ import { VantResolver } from '@vant/auto-import-resolver'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import path from 'path'
 import process from 'node:process'
+import { createHtmlPlugin } from 'vite-plugin-html'
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
-
+    createHtmlPlugin(),
     Components({
       dts: false,
       resolvers: [VantResolver({ importStyle: false })]

@@ -19,7 +19,7 @@ export const flagOptions = [
   { label: '没就诊过', value: 0 }
 ]
 /** 支付成功后的返回地址*/
-export const payCallbackUrl = 'http://localhost:5173'
+export const payCallbackUrl = import.meta.env.VITE_APP_CALLBACK
 
 // 肝功能
 export const liverFunctionOptions = [
